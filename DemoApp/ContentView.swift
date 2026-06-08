@@ -46,13 +46,14 @@ struct ContentView: View {
         }
     }
 
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
                 Group {
                     if let uiImage = displayedImage,
                        let rendered = uiImage.applying(losslessEdits, outputSize: uiImage.size) {
-                        Image(uiImage:rendered)
+                        Image(uiImage: rendered)
                             .resizable()
                             .scaledToFit()
                             .frame(maxWidth: .infinity)
@@ -61,6 +62,16 @@ struct ContentView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .stroke(.secondary, lineWidth: 1)
                             )
+                            .overlay(alignment: .bottomTrailing) {
+                                ShareLink(item: Image(uiImage: rendered), preview: SharePreview("Edited Photo", image: Image(uiImage: rendered))) {
+                                    Label("Share", systemImage: "square.and.arrow.up")
+                                        .labelStyle(.iconOnly)
+                                        .padding(10)
+                                        .background(.thinMaterial, in: Circle())
+                                }
+                                .buttonStyle(.plain)
+                                .padding(12)
+                            }
                             .padding(.horizontal)
                     } else {
                         ContentUnavailableView(
