@@ -6,7 +6,7 @@ HiveCompose is designed for apps that want to offer photo editing without destro
 
 ## Status
 
-HiveCompose is under active development and is not yet considered production-ready. APIs, behavior, and implementation details may change as the project evolves.
+HiveCompose is being used in several public applications by Hive 604. Future changes, even incompatible ones, are likely. We will be using semantic versioning, so pin appropriately and there should be no problems.
 
 The project is being developed in public and released under the MIT License.
 
@@ -57,17 +57,6 @@ This enables:
 - Contrast
 - Saturation
 - Hue / white balance style adjustments
-
-## Version 1.0 Goals
-
-The initial stable release is expected to focus on:
-
-- Polished crop workflow
-- Reliable tilt + crop interaction
-- Stable reusable editor API
-- Consistent rendered export pipeline
-- Persisted edit model
-- Documentation and integration examples
 
 ## Future Ideas
 
