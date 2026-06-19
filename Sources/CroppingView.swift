@@ -12,7 +12,7 @@ struct CroppingView: View {
     private let minimumStoredCropDimension: CGFloat = 0.0001
     private let cropHandleSize: CGFloat = 28
 
-    let image: UIImage
+    let image: PlatformImage
     let canvasSize: CGSize
     @Binding var edits: LosslessEdits
     let photoEditConfiguration: PhotoEditConfiguration
@@ -20,7 +20,7 @@ struct CroppingView: View {
     @State private var draftCropFrame: CGRect?
     @State private var cropGestureStartFrame: CGRect?
 
-    init(image: UIImage, canvasSize: CGSize, edits: Binding<LosslessEdits>, photoEditConfiguration: PhotoEditConfiguration) {
+    init(image: PlatformImage, canvasSize: CGSize, edits: Binding<LosslessEdits>, photoEditConfiguration: PhotoEditConfiguration) {
         self.image = image
         self.canvasSize = canvasSize
         _edits = edits
@@ -379,7 +379,7 @@ struct CroppingView: View {
 
     private var previewImage: Image {
         let adjustedImage = image.applyingColorAdjustments(using: edits, targetSize: canvasSize) ?? image
-        return Image(uiImage: adjustedImage)
+        return Image(platformImage: adjustedImage)
     }
 }
 
@@ -425,8 +425,16 @@ private extension Angle {
     let photoEditConfiguration = PhotoEditConfiguration(
         croppingEffects: CroppingEffectSet([.dim(opacity: 0.4)])
     )
-    CroppingView(
-        image: UIImage(systemName: "photo")!,
+    let demoImage: PlatformImage = {
+        #if canImport(UIKit)
+        return UIImage(systemName: "photo")!
+        #elseif canImport(AppKit)
+        let config = NSImage.SymbolConfiguration(pointSize: 64, weight: .regular)
+        return NSImage(systemSymbolName: "photo", accessibilityDescription: nil)!.withSymbolConfiguration(config) ?? NSImage(size: NSSize(width: 100, height: 100))
+        #endif
+    }()
+    return CroppingView(
+        image: demoImage,
         canvasSize: CGSize(width: 390, height: 640),
         edits: .constant(LosslessEdits(crop: nil, rotation: .degrees(6))),
         photoEditConfiguration: photoEditConfiguration

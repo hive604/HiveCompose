@@ -23,7 +23,7 @@ public struct PhotoEditor: View {
     }
 
     @Binding var edits: LosslessEdits
-    let image: UIImage
+    let image: PlatformImage
     @State private var selectedSection: AdjustmentSection = .tone
 
     let save: (() -> Void)?
@@ -51,7 +51,7 @@ public struct PhotoEditor: View {
 
     public init(
         _ edits: Binding<LosslessEdits>,
-        image: UIImage,
+        image: PlatformImage,
         configuration: PhotoEditConfiguration = PhotoEditConfiguration(),
         save: (() -> Void)? = nil
     ) {
@@ -126,7 +126,7 @@ private extension PhotoEditor {
                                 cropFrame: currentCropFrame
                             )
                         } else {
-                            Image(uiImage: image)
+                            Image(platformImage: image)
                                 .resizable()
                                 .scaledToFit()
                                 .padding()
@@ -249,10 +249,10 @@ private extension PhotoEditor {
     }
     func adjustPreviewImage(targetSize: CGSize) -> Image {
         if let adjustedImage = image.applyingColorAdjustments(using: draftEdits, targetSize: targetSize) {
-            return Image(uiImage: adjustedImage)
+            return Image(platformImage: adjustedImage)
         }
 
-        return Image(uiImage: image)
+        return Image(platformImage: image)
     }
 
     func sanitizeSelection() {
@@ -440,12 +440,20 @@ private extension PhotoEditor {
 // MARK: - Preview
 
 #Preview {
+#if canImport(UIKit)
     if let image = UIImage(systemName: "photo") {
         PhotoEditor(
             .constant(LosslessEdits(crop: nil, rotation: .zero)),
             image: image
         )
     }
+#elseif canImport(AppKit)
+    let image = NSImage(size: NSSize(width: 100, height: 100))
+    PhotoEditor(
+        .constant(LosslessEdits(crop: nil, rotation: .zero)),
+        image: image
+    )
+#endif
 }
 
 private extension CGSize {
