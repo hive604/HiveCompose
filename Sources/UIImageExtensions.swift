@@ -161,30 +161,30 @@ public extension PlatformImage {
             x: 6500 - (CGFloat(edits.warmth) * 2000),
             y: CGFloat(edits.tint) * 100
         )
-        guard let whiteBalancedImage = temperatureAndTint.outputImage else { return nil }
 
+        guard let whiteBalancedImage = temperatureAndTint.outputImage else { return nil }
         let vibrance = CIFilter.vibrance()
         vibrance.inputImage = whiteBalancedImage
         vibrance.amount = Float(edits.vibrance)
-        guard let vibranceAdjustedImage = vibrance.outputImage else { return nil }
 
+        guard let vibranceAdjustedImage = vibrance.outputImage else { return nil }
         let exposureAdjust = CIFilter.exposureAdjust()
         exposureAdjust.inputImage = vibranceAdjustedImage
         exposureAdjust.ev = Float(edits.exposure)
-        guard let exposureAdjustedImage = exposureAdjust.outputImage else { return nil }
 
+        guard let exposureAdjustedImage = exposureAdjust.outputImage else { return nil }
         let colorControls = CIFilter.colorControls()
         colorControls.inputImage = exposureAdjustedImage
         colorControls.brightness = Float(edits.brightness)
         colorControls.contrast = Float(edits.contrast)
         colorControls.saturation = Float(edits.saturation)
-        guard let colorAdjustedImage = colorControls.outputImage else { return nil }
 
+        guard let colorAdjustedImage = colorControls.outputImage else { return nil }
         let sharpenLuminance = CIFilter.sharpenLuminance()
         sharpenLuminance.inputImage = colorAdjustedImage
         sharpenLuminance.sharpness = Float(edits.sharpness)
-        guard let outputImage = sharpenLuminance.outputImage else { return nil }
 
+        guard let outputImage = sharpenLuminance.outputImage else { return nil }
         let context = CIContext(options: nil)
         guard let renderedCGImage = context.createCGImage(outputImage, from: outputImage.extent) else {
             return nil
