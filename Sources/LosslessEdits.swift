@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Foundation
-import UIKit
 
 nonisolated
 public struct LosslessEdits: Codable, Hashable, Sendable {
