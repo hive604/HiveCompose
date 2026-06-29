@@ -25,14 +25,14 @@
 
 /* Begin PBXFileReference section */
 		4837B7212FF20FE5000315BA /* HiveComposeDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HiveComposeDemo.xcodeproj; sourceTree = "<group>"; };
-		48BE6A942F980A0200E87943 /* HiveComposeDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HiveComposeDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		48BE6A942F980A0200E87943 /* HiveComposeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HiveComposeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		4837B6FF2FF20FCC000315BA /* DemoApp */ = {
+		4837B8992FF2DE6F000315BA /* HiveComposeDemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			name = DemoApp;
-			sourceTree = SOURCE_ROOT;
+			path = HiveComposeDemo;
+			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -56,7 +56,7 @@
 		48BE6A8B2F980A0200E87943 = {
 			isa = PBXGroup;
 			children = (
-				4837B6FF2FF20FCC000315BA /* DemoApp */,
+				4837B8992FF2DE6F000315BA /* HiveComposeDemo */,
 				48BE6A952F980A0200E87943 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -64,7 +64,7 @@
 		48BE6A952F980A0200E87943 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				48BE6A942F980A0200E87943 /* HiveComposeDemoApp.app */,
+				48BE6A942F980A0200E87943 /* HiveComposeDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,9 +72,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		48BE6A932F980A0200E87943 /* HiveComposeDemoApp */ = {
+		48BE6A932F980A0200E87943 /* HiveComposeDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "HiveComposeDemoApp" */;
+			buildConfigurationList = 48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "HiveComposeDemo" */;
 			buildPhases = (
 				48BE6A902F980A0200E87943 /* Sources */,
 				48BE6A912F980A0200E87943 /* Frameworks */,
@@ -86,14 +86,14 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				4837B6FF2FF20FCC000315BA /* DemoApp */,
+				4837B8992FF2DE6F000315BA /* HiveComposeDemo */,
 			);
-			name = HiveComposeDemoApp;
+			name = HiveComposeDemo;
 			packageProductDependencies = (
 				4837B72D2FF2100E000315BA /* HiveCompose */,
 			);
-			productName = LosslessPhotoEditor;
-			productReference = 48BE6A942F980A0200E87943 /* HiveComposeDemoApp.app */;
+			productName = HiveComposeDemo;
+			productReference = 48BE6A942F980A0200E87943 /* HiveComposeDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -134,7 +134,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				48BE6A932F980A0200E87943 /* HiveComposeDemoApp */,
+				48BE6A932F980A0200E87943 /* HiveComposeDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -303,7 +303,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hive604.LosslessPhotoEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hive604.HiveComposeDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -334,7 +334,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hive604.LosslessPhotoEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hive604.HiveComposeDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -357,7 +357,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "HiveComposeDemoApp" */ = {
+		48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "HiveComposeDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				48BE6AA02F980A0400E87943 /* Debug */,
