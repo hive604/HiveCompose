@@ -111,6 +111,12 @@ struct CroppingView: View {
             draftCropFrame = nil
             cropGestureStartFrame = nil
         }
+        .onChange(of: canvasSize) { _, _ in
+            // The draft crop frame is stored in screen coordinates, so it must be
+            // recalculated from the normalized crop after layout size changes.
+            draftCropFrame = nil
+            cropGestureStartFrame = nil
+        }
         .task(id: previewRenderKey) {
             adjustedPreviewImage = image.applyingColorAdjustments(using: edits, targetSize: canvasSize) ?? image
         }
