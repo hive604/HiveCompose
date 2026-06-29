@@ -352,7 +352,6 @@ struct ControlsView: View {
             VStack(alignment: .leading, spacing: rowSpacing) {
                 aspectRatioRow
                 adjustmentSlider(for: .tilt)
-                rotationControls(spacing: 12)
             }
         case .tone, .color, .whiteBalance:
             let sectionAdjustments = adjustments(for: selectedCompactSection)
@@ -412,10 +411,8 @@ struct ControlsView: View {
             }
             .buttonStyle(.plain)
 
-            if horizontalSizeClass == .regular {
-                Spacer(minLength: 8)
-                rotationControls(spacing: 8)
-            }
+            Spacer(minLength: 8)
+            rotationControls(spacing: 8)
         }
     }
 
