@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import UniformTypeIdentifiers
 import HiveCompose
 
 struct ContentView: View {
@@ -21,6 +22,11 @@ struct ContentView: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var isShowingEditor = false
     @State private var isShowingEditorOptions = false
+    @State private var isShowingPhotoLibrary = false
+    @State private var isShowingFileImporter = false
+    @State private var isShowingCamera = false
+    @State private var canPasteImage = false
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedPanel: EditorOptionsPanel.OptionsPanel = .crop
 
     private var configurableAdjustments: [PhotoEditConfiguration.Adjustment] {
@@ -85,8 +91,50 @@ struct ContentView: View {
                 }
 
                 HStack {
-                    PhotosPicker(selection: $photoItem, matching: .images, preferredItemEncoding: .automatic) {
-                        Label("Pick…", systemImage: "photo")
+                    Menu {
+                        Menu {
+                            Button {
+                                isShowingPhotoLibrary = true
+                            } label: {
+                                Label("Photo Library", systemImage: "photo")
+                            }
+
+                            if canPasteImage {
+                                Button {
+                                    pasteImage()
+                                } label: {
+                                    Label("Paste", systemImage: "doc.on.clipboard")
+                                }
+                            }
+
+                            Button {
+                                isShowingFileImporter = true
+                            } label: {
+                                Label("File", systemImage: "folder")
+                            }
+
+#if canImport(UIKit)
+                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                Button {
+                                    isShowingCamera = true
+                                } label: {
+                                    Label("Camera", systemImage: "camera")
+                                }
+                            }
+#endif
+                        } label: {
+                            Label("Set Photo", systemImage: "photo.badge.plus")
+                        }
+
+                        if displayedImage != nil {
+                            Button(role: .destructive) {
+                                clearImage()
+                            } label: {
+                                Label("Clear", systemImage: "trash")
+                            }
+                        }
+                    } label: {
+                        Label("Photo", systemImage: "photo.on.rectangle")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -95,15 +143,6 @@ struct ContentView: View {
                         isShowingEditor = true
                     } label: {
                         Label("Edit", systemImage: "pencil")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(displayedImage == nil)
-
-                    Button(role: .destructive) {
-                        clearImage()
-                    } label: {
-                        Label("Clear", systemImage: "trash")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -138,7 +177,10 @@ struct ContentView: View {
                     }
                 }
             }
-            .task { loadImage() }
+            .task {
+                loadImage()
+                refreshPasteAvailability()
+            }
             .fullScreenCover(isPresented: $isShowingEditor) {
                 if let uiImage = displayedImage {
                     let config = PhotoEditConfiguration(
@@ -152,18 +194,28 @@ struct ContentView: View {
                     )
                 }
             }
+            .photosPicker(
+                isPresented: $isShowingPhotoLibrary,
+                selection: $photoItem,
+                matching: .images,
+                preferredItemEncoding: .automatic
+            )
+            .fileImporter(isPresented: $isShowingFileImporter, allowedContentTypes: [.image]) { result in
+                importImageFile(result)
+            }
+#if canImport(UIKit)
+            .sheet(isPresented: $isShowingCamera) {
+                CameraImagePicker { image in
+                    importImage(image)
+                }
+            }
+#endif
         }
         .task(id: photoItem) {
             guard let item = photoItem else { return }
             do {
                 if let data = try await item.loadTransferable(type: Data.self) {
-                    selectedImageUUIDString = UUID().uuidString
-                    try saveImage(data)
-                    displayedImage = UIImage(data: data)
-                    losslessEdits = LosslessEdits(crop: nil, rotation: .zero)
-                    settings = .default
-                    persistSettingsModel()
-                    persistLosslessEdits()
+                    try importImageData(data)
                 }
             } catch {
                 print("Failed to load/persist image: \(error)")
@@ -172,6 +224,74 @@ struct ContentView: View {
         .onChange(of: losslessEdits) { _, _ in
             persistLosslessEdits()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                refreshPasteAvailability()
+            }
+        }
+#if canImport(UIKit)
+        .onReceive(NotificationCenter.default.publisher(for: UIPasteboard.changedNotification)) { _ in
+            refreshPasteAvailability()
+        }
+#endif
+    }
+}
+
+// MARK: - Import Helpers
+private extension ContentView {
+    func importImageData(_ data: Data) throws {
+        guard let image = UIImage(data: data) else { return }
+
+        selectedImageUUIDString = UUID().uuidString
+        try saveImage(data)
+        displayedImage = image
+        losslessEdits = LosslessEdits(crop: nil, rotation: .zero)
+        settings = .default
+        persistSettingsModel()
+        persistLosslessEdits()
+    }
+
+    func importImage(_ image: UIImage) {
+        guard let data = image.jpegData(compressionQuality: 0.95) ?? image.pngData() else { return }
+
+        do {
+            try importImageData(data)
+        } catch {
+            print("Failed to import image: \(error)")
+        }
+    }
+
+    func importImageFile(_ result: Result<URL, any Error>) {
+        do {
+            let url = try result.get()
+            let didAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if didAccess {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
+
+            try importImageData(Data(contentsOf: url))
+        } catch {
+            print("Failed to import image file: \(error)")
+        }
+    }
+
+    func pasteImage() {
+#if canImport(UIKit)
+        if let image = UIPasteboard.general.image {
+            importImage(image)
+        }
+        refreshPasteAvailability()
+#endif
+    }
+
+    func refreshPasteAvailability() {
+#if canImport(UIKit)
+        canPasteImage = UIPasteboard.general.hasImages
+#else
+        canPasteImage = false
+#endif
     }
 }
 
@@ -218,6 +338,51 @@ private extension ContentView {
         }
     }
 }
+
+#if canImport(UIKit)
+private struct CameraImagePicker: UIViewControllerRepresentable {
+    let onImagePicked: (UIImage) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.cameraCaptureMode = .photo
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onImagePicked: onImagePicked, dismiss: dismiss)
+    }
+
+    final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        let onImagePicked: (UIImage) -> Void
+        let dismiss: DismissAction
+
+        init(onImagePicked: @escaping (UIImage) -> Void, dismiss: DismissAction) {
+            self.onImagePicked = onImagePicked
+            self.dismiss = dismiss
+        }
+
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+        ) {
+            if let image = info[.originalImage] as? UIImage {
+                onImagePicked(image)
+            }
+            dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            dismiss()
+        }
+    }
+}
+#endif
 
 #Preview {
     ContentView()
