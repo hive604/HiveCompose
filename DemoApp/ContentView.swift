@@ -53,7 +53,7 @@ struct ContentView: View {
                 Group {
                     if let uiImage = displayedImage,
                        let rendered = uiImage.applying(losslessEdits, outputSize: uiImage.size) {
-                        PlatformImage(platformImage: rendered)
+                        Image(platformImage: rendered)
                             .resizable()
                             .scaledToFit()
                             .frame(maxWidth: .infinity)
@@ -63,7 +63,8 @@ struct ContentView: View {
                                     .stroke(.secondary, lineWidth: 1)
                             )
                             .overlay(alignment: .bottomTrailing) {
-                                ShareLink(item: Image(platformimage: rendered), preview: SharePreview("Edited Photo", image: Image(platformImage: rendered))) {
+                                let image = Image(platformImage: rendered)
+                                ShareLink(item: image, preview: SharePreview("Edited Photo", image: image)) {
                                     Label("Share", systemImage: "square.and.arrow.up")
                                         .labelStyle(.iconOnly)
                                         .padding(10)

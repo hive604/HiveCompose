@@ -7,19 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4860FEF52F9BFDD90061F443 /* HiveCompose.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4860FEED2F9BFDD90061F443 /* HiveCompose.framework */; };
-		4860FEF62F9BFDD90061F443 /* HiveCompose.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4860FEED2F9BFDD90061F443 /* HiveCompose.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4837B72E2FF2100E000315BA /* HiveCompose in Frameworks */ = {isa = PBXBuildFile; productRef = 4837B72D2FF2100E000315BA /* HiveCompose */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		4860FEF32F9BFDD90061F443 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 48BE6A8C2F980A0200E87943 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4860FEEC2F9BFDD90061F443;
-			remoteInfo = Reframe;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		4860FEFA2F9BFDD90061F443 /* Embed Frameworks */ = {
@@ -28,7 +17,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4860FEF62F9BFDD90061F443 /* HiveCompose.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -36,129 +24,57 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		486000152FA036540061F443 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		486001E62FA03B2E0061F443 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		4860FEED2F9BFDD90061F443 /* HiveCompose.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HiveCompose.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		48BE6A942F980A0200E87943 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4837B7212FF20FE5000315BA /* HiveComposeDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HiveComposeDemo.xcodeproj; sourceTree = "<group>"; };
+		48BE6A942F980A0200E87943 /* HiveComposeDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HiveComposeDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		486002062FA03BE20061F443 /* Exceptions for "Sources" folder in "HiveCompose" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				AdaptiveToolbarLabelStyle.swift,
-				CircularSymbolButton.swift,
-				ControlsView.swift,
-				CropBounds.swift,
-				CropConstraint.swift,
-				CropDimmedAreaShape.swift,
-				CropFrameMutation.swift,
-				CropHandles.swift,
-				CroppingEffects.swift,
-				CroppingView.swift,
-				LosslessEditGeometry.swift,
-				LosslessEdits.swift,
-				PhotoEditConfiguration.swift,
-				PhotoEditor.swift,
-				Reframe.docc,
-				RotationDirection.swift,
-				UIImageExtensions.swift,
-			);
-			target = 4860FEEC2F9BFDD90061F443 /* HiveCompose */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		486001E82FA03BDA0061F443 /* Sources */ = {
+		4837B6FF2FF20FCC000315BA /* DemoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				486002062FA03BE20061F443 /* Exceptions for "Sources" folder in "HiveCompose" target */,
-			);
-			path = Sources;
-			sourceTree = "<group>";
-		};
-		4860FEE62F9BA48D0061F443 /* DemoApp */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DemoApp;
-			sourceTree = "<group>";
+			name = DemoApp;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4860FEEA2F9BFDD90061F443 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		48BE6A912F980A0200E87943 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4860FEF52F9BFDD90061F443 /* HiveCompose.framework in Frameworks */,
+				4837B72E2FF2100E000315BA /* HiveCompose in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4837B7232FF20FE5000315BA /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		48BE6A8B2F980A0200E87943 = {
 			isa = PBXGroup;
 			children = (
-				486001E82FA03BDA0061F443 /* Sources */,
-				486001E62FA03B2E0061F443 /* Package.swift */,
+				4837B6FF2FF20FCC000315BA /* DemoApp */,
 				48BE6A952F980A0200E87943 /* Products */,
-				4860FEE62F9BA48D0061F443 /* DemoApp */,
-				486000152FA036540061F443 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
 		48BE6A952F980A0200E87943 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				48BE6A942F980A0200E87943 /* DemoApp.app */,
-				4860FEED2F9BFDD90061F443 /* HiveCompose.framework */,
+				48BE6A942F980A0200E87943 /* HiveComposeDemoApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		4860FEE82F9BFDD90061F443 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		4860FEEC2F9BFDD90061F443 /* HiveCompose */ = {
+		48BE6A932F980A0200E87943 /* HiveComposeDemoApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4860FEF72F9BFDD90061F443 /* Build configuration list for PBXNativeTarget "HiveCompose" */;
-			buildPhases = (
-				4860FEE82F9BFDD90061F443 /* Headers */,
-				4860FEE92F9BFDD90061F443 /* Sources */,
-				4860FEEA2F9BFDD90061F443 /* Frameworks */,
-				4860FEEB2F9BFDD90061F443 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = HiveCompose;
-			packageProductDependencies = (
-			);
-			productName = Reframe;
-			productReference = 4860FEED2F9BFDD90061F443 /* HiveCompose.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		48BE6A932F980A0200E87943 /* DemoApp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "DemoApp" */;
+			buildConfigurationList = 48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "HiveComposeDemoApp" */;
 			buildPhases = (
 				48BE6A902F980A0200E87943 /* Sources */,
 				48BE6A912F980A0200E87943 /* Frameworks */,
@@ -168,16 +84,16 @@
 			buildRules = (
 			);
 			dependencies = (
-				4860FEF42F9BFDD90061F443 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				4860FEE62F9BA48D0061F443 /* DemoApp */,
+				4837B6FF2FF20FCC000315BA /* DemoApp */,
 			);
-			name = DemoApp;
+			name = HiveComposeDemoApp;
 			packageProductDependencies = (
+				4837B72D2FF2100E000315BA /* HiveCompose */,
 			);
 			productName = LosslessPhotoEditor;
-			productReference = 48BE6A942F980A0200E87943 /* DemoApp.app */;
+			productReference = 48BE6A942F980A0200E87943 /* HiveComposeDemoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -190,15 +106,12 @@
 				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
-					4860FEEC2F9BFDD90061F443 = {
-						CreatedOnToolsVersion = 26.4.1;
-					};
 					48BE6A932F980A0200E87943 = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
 				};
 			};
-			buildConfigurationList = 48BE6A8F2F980A0200E87943 /* Build configuration list for PBXProject "HiveCompose" */;
+			buildConfigurationList = 48BE6A8F2F980A0200E87943 /* Build configuration list for PBXProject "HiveComposeDemo" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -207,25 +120,26 @@
 			);
 			mainGroup = 48BE6A8B2F980A0200E87943;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4837B72C2FF2100E000315BA /* XCLocalSwiftPackageReference "../../HiveCompose" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 48BE6A952F980A0200E87943 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 4837B7232FF20FE5000315BA /* Products */;
+					ProjectRef = 4837B7212FF20FE5000315BA /* HiveComposeDemo.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
-				48BE6A932F980A0200E87943 /* DemoApp */,
-				4860FEEC2F9BFDD90061F443 /* HiveCompose */,
+				48BE6A932F980A0200E87943 /* HiveComposeDemoApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		4860FEEB2F9BFDD90061F443 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		48BE6A922F980A0200E87943 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -236,13 +150,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4860FEE92F9BFDD90061F443 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		48BE6A902F980A0200E87943 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -252,89 +159,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		4860FEF42F9BFDD90061F443 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4860FEEC2F9BFDD90061F443 /* HiveCompose */;
-			targetProxy = 4860FEF32F9BFDD90061F443 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		4860FEF82F9BFDD90061F443 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = H25U5KDRF6;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hive604.Reframe;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_MODULE = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		4860FEF92F9BFDD90061F443 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = H25U5KDRF6;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.hive604.Reframe;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_MODULE = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		48BE6A9D2F980A0400E87943 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -523,16 +348,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4860FEF72F9BFDD90061F443 /* Build configuration list for PBXNativeTarget "HiveCompose" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4860FEF82F9BFDD90061F443 /* Debug */,
-				4860FEF92F9BFDD90061F443 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		48BE6A8F2F980A0200E87943 /* Build configuration list for PBXProject "HiveCompose" */ = {
+		48BE6A8F2F980A0200E87943 /* Build configuration list for PBXProject "HiveComposeDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				48BE6A9D2F980A0400E87943 /* Debug */,
@@ -541,7 +357,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "DemoApp" */ = {
+		48BE6A9F2F980A0400E87943 /* Build configuration list for PBXNativeTarget "HiveComposeDemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				48BE6AA02F980A0400E87943 /* Debug */,
@@ -551,6 +367,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		4837B72C2FF2100E000315BA /* XCLocalSwiftPackageReference "../../HiveCompose" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../HiveCompose;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4837B72D2FF2100E000315BA /* HiveCompose */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HiveCompose;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 48BE6A8C2F980A0200E87943 /* Project object */;
 }
