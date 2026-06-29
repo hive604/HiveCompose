@@ -360,15 +360,16 @@ struct ControlsView: View {
 
     private func rotationControls(spacing: CGFloat) -> some View {
         HStack(spacing: spacing) {
-            rotationButton(.counterClockwise)
-            rotationButton(.clockwise)
+            rotationButton(.counterClockwise, label: "Rotate Left", systemImage: "rotate.left")
+            rotationButton(.clockwise, label: "Rotate Right", systemImage: "rotate.right")
         }
     }
 
-    private func rotationButton(_ direction: RotationDirection) -> some View {
-        let label = direction == .counterClockwise ? "Rotate Left" : "Rotate Right"
-        let systemImage = direction == .counterClockwise ? "rotate.left" : "rotate.right"
-
+    private func rotationButton(
+        _ direction: RotationDirection,
+        label: LocalizedStringResource,
+        systemImage: String
+    ) -> some View {
         return Button {
             withAnimation(.snappy(duration: 0.2)) {
                 onRotate(direction)
