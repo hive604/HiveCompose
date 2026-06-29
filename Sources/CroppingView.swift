@@ -381,35 +381,13 @@ struct CroppingView: View {
         return 0
     }
 
-    private var previewRenderKey: PreviewRenderKey {
-        PreviewRenderKey(
-            targetSize: canvasSize,
-            brightness: edits.brightness,
-            exposure: edits.exposure,
-            contrast: edits.contrast,
-            saturation: edits.saturation,
-            vibrance: edits.vibrance,
-            sharpness: edits.sharpness,
-            warmth: edits.warmth,
-            tint: edits.tint
-        )
+    private var previewRenderKey: AdjustmentPreviewRenderKey {
+        AdjustmentPreviewRenderKey(targetSize: canvasSize, edits: edits)
     }
 
     private var previewImage: Image {
         Image(platformImage: adjustedPreviewImage ?? image)
     }
-}
-
-private struct PreviewRenderKey: Hashable {
-    var targetSize: CGSize
-    var brightness: Double
-    var exposure: Double
-    var contrast: Double
-    var saturation: Double
-    var vibrance: Double
-    var sharpness: Double
-    var warmth: Double
-    var tint: Double
 }
 
 private extension CGSize {
