@@ -20,6 +20,7 @@ struct ContentView: View {
     // Temporary selection binding for the picker
     @State private var photoItem: PhotosPickerItem?
     @State private var isShowingEditor = false
+    @State private var isShowingEditorOptions = false
     @State private var selectedPanel: EditorOptionsPanel.OptionsPanel = .crop
 
     private var configurableAdjustments: [PhotoEditConfiguration.Adjustment] {
@@ -83,13 +84,6 @@ struct ContentView: View {
                     }
                 }
 
-                EditorOptionsPanel(
-                    selectedPanel: $selectedPanel,
-                    settings: $settings,
-                    configurableAdjustments: configurableAdjustments,
-                    persistSettings: persistSettingsModel
-                )
-
                 HStack {
                     PhotosPicker(selection: $photoItem, matching: .images, preferredItemEncoding: .automatic) {
                         Label("Pick…", systemImage: "photo")
@@ -120,6 +114,30 @@ struct ContentView: View {
                 Spacer()
             }
             .navigationTitle("Photo Picker")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        isShowingEditorOptions = true
+                    } label: {
+                        Label("Demo Configuration", systemImage: "gearshape")
+                    }
+                    .popover(
+                        isPresented: $isShowingEditorOptions,
+                        attachmentAnchor: .rect(.bounds),
+                        arrowEdge: .top
+                    ) {
+                        EditorOptionsPanel(
+                            selectedPanel: $selectedPanel,
+                            settings: $settings,
+                            configurableAdjustments: configurableAdjustments,
+                            persistSettings: persistSettingsModel
+                        )
+                        .padding(.vertical)
+                        .frame(width: 420)
+                        .presentationCompactAdaptation(.popover)
+                    }
+                }
+            }
             .task { loadImage() }
             .fullScreenCover(isPresented: $isShowingEditor) {
                 if let uiImage = displayedImage {

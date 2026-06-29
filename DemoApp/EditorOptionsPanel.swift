@@ -42,7 +42,7 @@ struct EditorOptionsPanel: View {
     }
 
     var body: some View {
-        GroupBox("Editor Options") {
+        GroupBox("Demo Configuration") {
             VStack(alignment: .leading, spacing: 12) {
                 Picker("Options Panel", selection: $selectedPanel) {
                     ForEach(OptionsPanel.allCases) { panel in
