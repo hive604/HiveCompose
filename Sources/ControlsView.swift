@@ -352,21 +352,7 @@ struct ControlsView: View {
             VStack(alignment: .leading, spacing: rowSpacing) {
                 aspectRatioRow
                 adjustmentSlider(for: .tilt)
-                HStack(spacing: 12) {
-                    Button {
-                        withAnimation(.snappy(duration: 0.2)) { onRotate(.counterClockwise) }
-                    } label: {
-                        Label("Rotate Left", systemImage: "rotate.left")
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button {
-                        withAnimation(.snappy(duration: 0.2)) { onRotate(.clockwise) }
-                    } label: {
-                        Label("Rotate Right", systemImage: "rotate.right")
-                    }
-                    .buttonStyle(.bordered)
-                }
+                rotationControls(spacing: 12)
             }
         case .tone, .color, .whiteBalance:
             let sectionAdjustments = adjustments(for: selectedCompactSection)
@@ -428,23 +414,31 @@ struct ControlsView: View {
 
             if horizontalSizeClass == .regular {
                 Spacer(minLength: 8)
-                HStack(spacing: 8) {
-                    Button {
-                        withAnimation(.snappy(duration: 0.2)) { onRotate(.counterClockwise) }
-                    } label: {
-                        Label("Rotate Left", systemImage: "rotate.left")
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button {
-                        withAnimation(.snappy(duration: 0.2)) { onRotate(.clockwise) }
-                    } label: {
-                        Label("Rotate Right", systemImage: "rotate.right")
-                    }
-                    .buttonStyle(.bordered)
-                }
+                rotationControls(spacing: 8)
             }
         }
+    }
+
+    private func rotationControls(spacing: CGFloat) -> some View {
+        HStack(spacing: spacing) {
+            rotationButton(.counterClockwise)
+            rotationButton(.clockwise)
+        }
+    }
+
+    private func rotationButton(_ direction: RotationDirection) -> some View {
+        let label = direction == .counterClockwise ? "Rotate Left" : "Rotate Right"
+        let systemImage = direction == .counterClockwise ? "rotate.left" : "rotate.right"
+
+        return Button {
+            withAnimation(.snappy(duration: 0.2)) {
+                onRotate(direction)
+            }
+        } label: {
+            Label(label, systemImage: systemImage)
+                .labelStyle(.iconOnly)
+        }
+        .buttonStyle(.bordered)
     }
 
     private var cropConstraintPopover: some View {
