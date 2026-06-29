@@ -1,5 +1,21 @@
 # HiveCompose Change Log
 
+## 1.0.4
+
+Package
+
+* Share adjustment metadata between regular and compact controls.
+* Reduce duplicated UI code.
+* Fix crop draft state after layout size changes.
+* Improve photo editor presentation on macOS with a minimum editor height.
+* Improve macOS rendering for rotated and cropped images.
+
+Demo
+
+* Refresh the demo app with a renamed HiveComposeDemo target and reorganized source layout.
+* Add cross-platform image import from Photos, files, pasteboard, and camera where available.
+* Move demo configuration into a toolbar popover.
+
 ## 1.0.3
 
 * Reduced repeated Core Image work during crop interaction and unrelated UI refreshes.
