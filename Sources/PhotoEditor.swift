@@ -197,9 +197,6 @@ private extension PhotoEditor {
         )
 
         ZStack {
-            let _ = {
-                Self.log("baseScale=\(baseScale), cropScale=\(cropScale), total=\(baseScale * cropScale)")
-            }()
             Color.black
 
             adjustPreviewImage(targetSize: geometrySize)
