@@ -101,6 +101,11 @@ public extension PlatformImage {
             sourceImage.draw(in: imageRect)
         }
 #elseif canImport(AppKit)
+        var sourceImageRect = CGRect(origin: .zero, size: sourceImage.size)
+        guard let sourceCGImage = sourceImage.cgImage(forProposedRect: &sourceImageRect, context: nil, hints: nil) else {
+            return nil
+        }
+
         let rep = NSBitmapImageRep(
             bitmapDataPlanes: nil,
             pixelsWide: Int(outputBounds.width),
@@ -123,7 +128,7 @@ public extension PlatformImage {
         context.cgContext.scaleBy(x: outputScale, y: outputScale)
         context.cgContext.translateBy(
             x: layoutImageSize.width / 2 - cropFrame.midX,
-            y: layoutImageSize.height / 2 - cropFrame.midY
+            y: cropFrame.midY - layoutImageSize.height / 2
         )
         context.cgContext.rotate(by: CGFloat(edits.rotation.radians))
         context.cgContext.scaleBy(x: renderScale, y: renderScale)
@@ -134,7 +139,7 @@ public extension PlatformImage {
             width: renderSize.width,
             height: renderSize.height
         )
-        sourceImage.draw(in: imageRect)
+        context.cgContext.draw(sourceCGImage, in: imageRect)
         context.flushGraphics()
         NSGraphicsContext.restoreGraphicsState()
 
