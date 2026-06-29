@@ -1,5 +1,5 @@
 //
-//  PllatformImage.swift
+//  PlatformImage.swift
 //  HiveCompose
 //
 //  Created by Steven Fisher on 2026-06-18.
