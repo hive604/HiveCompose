@@ -29,6 +29,7 @@ public struct PhotoEditor: View {
     let save: (() -> Void)?
     @State private var draftEdits: LosslessEdits
     @State private var selectedAdjustment: PhotoEditConfiguration.Adjustment = .tilt
+    @State private var adjustedPreviewImage: PlatformImage?
 
     let photoEditConfiguration: PhotoEditConfiguration
 
@@ -108,6 +109,7 @@ private extension PhotoEditor {
                 height: max(0, geometry.size.height - geometryCanvasBottomInset)
             )
             let displayGeometry = displayGeometry(in: canvasSize)
+            let previewRenderKey = adjustmentPreviewRenderKey(targetSize: canvasSize)
             let currentCropFrame = committedCropFrame(in: canvasSize, visibleImageSize: displayGeometry.visibleImageSize)
 
             ZStack {
@@ -171,6 +173,9 @@ private extension PhotoEditor {
             .onChange(of: selectedSection) { _, newValue in
                 Self.log("section -> \(newValue.rawValue)")
             }
+            .task(id: previewRenderKey) {
+                adjustedPreviewImage = image.applyingColorAdjustments(using: draftEdits, targetSize: canvasSize) ?? image
+            }
             .onAppear {
                 sanitizeSelection()
             }
@@ -199,7 +204,7 @@ private extension PhotoEditor {
         ZStack {
             Color.black
 
-            adjustPreviewImage(targetSize: geometrySize)
+            adjustmentPreviewImage
                 .resizable()
                 .scaledToFit()
                 .frame(width: renderSize.width, height: renderSize.height)
@@ -244,12 +249,13 @@ private extension PhotoEditor {
             }
         )
     }
-    func adjustPreviewImage(targetSize: CGSize) -> Image {
-        if let adjustedImage = image.applyingColorAdjustments(using: draftEdits, targetSize: targetSize) {
-            return Image(platformImage: adjustedImage)
-        }
 
-        return Image(platformImage: image)
+    var adjustmentPreviewImage: Image {
+        Image(platformImage: adjustedPreviewImage ?? image)
+    }
+
+    func adjustmentPreviewRenderKey(targetSize: CGSize) -> AdjustmentPreviewRenderKey {
+        AdjustmentPreviewRenderKey(targetSize: targetSize, edits: draftEdits)
     }
 
     func sanitizeSelection() {
