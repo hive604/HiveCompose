@@ -24,6 +24,7 @@ public struct PhotoEditor: View {
     @State private var draftEdits: LosslessEdits
     @State private var selectedAdjustment: PhotoEditConfiguration.Adjustment = .tilt
     @State private var adjustedPreviewImage: PlatformImage?
+    @FocusState private var editorSurfaceIsFocused: Bool
 
     let photoEditConfiguration: PhotoEditConfiguration
 
@@ -66,6 +67,7 @@ public struct PhotoEditor: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Color.black)
+        .editorInitialFocus($editorSurfaceIsFocused)
         .onChange(of: edits) { _, newValue in
             draftEdits = newValue
             sanitizeSelection()
@@ -440,6 +442,22 @@ private extension PhotoEditor {
             fittedSize: fittedSize,
             visibleImageSize: visibleImageSize
         )
+    }
+}
+
+// MARK: - Platform Focus
+
+private extension View {
+    @ViewBuilder
+    func editorInitialFocus(_ isFocused: FocusState<Bool>.Binding) -> some View {
+#if os(macOS)
+        self
+            .focusable()
+            .focused(isFocused)
+            .defaultFocus(isFocused, true)
+#else
+        self
+#endif
     }
 }
 
