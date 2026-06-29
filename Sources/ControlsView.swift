@@ -158,8 +158,7 @@ struct ControlsView: View {
     @ScaledMetric(relativeTo: .caption2) private var sectionSpacing: CGFloat = 16
     @ScaledMetric(relativeTo: .caption2) private var compactSegmentHeight: CGFloat = 30
     @State private var isShowingCropConstraintPopover = false
-    @State private var selectedCompactSection: CompactSection = .geometry
-    @State private var selectedCompactAdjustment: PhotoEditConfiguration.Adjustment? = nil
+
 
     private var availableTools: [PhotoEditConfiguration.Adjustment] {
         let allowedAdjustments = photoEditConfiguration.allowedAdjustments
@@ -186,6 +185,17 @@ struct ControlsView: View {
         if availableTools.contains(where: { $0.section == .color }) { sections.append(.color) }
         if availableTools.contains(where: { $0.section == .whiteBalance }) { sections.append(.whiteBalance) }
         return sections
+    }
+
+    private var selectedCompactSection: CompactSection {
+        compactSection(for: selectedSection)
+    }
+
+    private var selectedCompactAdjustment: PhotoEditConfiguration.Adjustment? {
+        guard selectedCompactSection != .geometry else { return nil }
+
+        let sectionAdjustments = adjustments(for: selectedCompactSection)
+        return sectionAdjustments.contains(selectedAdjustment) ? selectedAdjustment : sectionAdjustments.first
     }
 
     private func adjustments(for section: CompactSection) -> [PhotoEditConfiguration.Adjustment] {
@@ -273,27 +283,19 @@ struct ControlsView: View {
                     ForEach(availableCompactSections) { section in
                         Button {
                             withAnimation(.snappy(duration: 0.25)) {
-                                selectedCompactSection = section
-                                // Keep selectedAdjustment/section in sync for downstream bindings
                                 switch section {
                                 case .geometry:
-                                    selectedAdjustment = .crop
                                     selectedSection = .geometry
+                                    selectedAdjustment = .crop
                                 case .tone:
-                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
                                     selectedSection = .tone
+                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
                                 case .color:
-                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
                                     selectedSection = .color
-                                case .whiteBalance:
                                     selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
+                                case .whiteBalance:
                                     selectedSection = .whiteBalance
-                                }
-                                if selectedCompactSection != .geometry {
-                                    let sectionAdjustments = adjustments(for: selectedCompactSection)
-                                    selectedCompactAdjustment = sectionAdjustments.first
-                                } else {
-                                    selectedCompactAdjustment = nil
+                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
                                 }
                             }
                         } label: {
@@ -319,7 +321,6 @@ struct ControlsView: View {
                             ForEach(sectionAdjustments) { adj in
                                 Button {
                                     withAnimation(.snappy(duration: 0.2)) {
-                                        selectedCompactAdjustment = adj
                                         selectedAdjustment = adj
                                         selectedSection = adj.section
                                     }
@@ -520,6 +521,20 @@ struct ControlsView: View {
         availableTools.first(where: { $0.section == section })
     }
 
+    private func compactSection(for section: AdjustmentSection) -> CompactSection {
+        switch section {
+        case .geometry:
+            return .geometry
+        case .tone:
+            return .tone
+        case .color:
+            return .color
+        case .whiteBalance:
+            return .whiteBalance
+        }
+    }
+
+
     private func sanitizeSelection() {
         if !availableTools.contains(selectedAdjustment),
            let firstAdjustment = availableTools.first {
@@ -528,6 +543,11 @@ struct ControlsView: View {
 
         if !availableSections.contains(selectedSection) {
             selectedSection = selectedAdjustment.section
+        }
+
+        if selectedAdjustment.section != selectedSection,
+           let firstAdjustment = tool(for: selectedSection) {
+            selectedAdjustment = firstAdjustment
         }
     }
 

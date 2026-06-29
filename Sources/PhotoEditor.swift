@@ -39,10 +39,6 @@ public struct PhotoEditor: View {
         selectedAdjustment == .crop && cropIsAllowed
     }
 
-    private var geometryCanvasBottomInset: CGFloat {
-        guard selectedSection == .geometry, hasAvailableAdjustments else { return 0 }
-        return horizontalSizeClass == .compact ? 148 : 212
-    }
 
     public init(
         _ edits: Binding<LosslessEdits>,
@@ -97,73 +93,17 @@ private extension PhotoEditor {
 
     var editorContent: some View {
         GeometryReader { geometry in
-            let canvasSize = CGSize(
-                width: geometry.size.width,
-                height: max(0, geometry.size.height - geometryCanvasBottomInset)
-            )
-            let displayGeometry = displayGeometry(in: canvasSize)
-            let previewRenderKey = adjustmentPreviewRenderKey(targetSize: canvasSize)
-            let currentCropFrame = committedCropFrame(in: canvasSize, visibleImageSize: displayGeometry.visibleImageSize)
-
-            ZStack {
-                ZStack(alignment: .bottom) {
-                    Group {
-                        if showsCroppingMode {
-                            CroppingView(
-                                image: image,
-                                canvasSize: canvasSize,
-                                edits: $draftEdits,
-                                photoEditConfiguration: photoEditConfiguration
-                            )
-                        } else if hasAvailableAdjustments {
-                            adjustCanvas(
-                                geometrySize: canvasSize,
-                                cropFrame: currentCropFrame
-                            )
-                        } else {
-                            Image(platformImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .padding()
-                        }
-                    }
-                    .frame(width: canvasSize.width, height: canvasSize.height)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .animation(.snappy(duration: 0.25), value: selectedSection)
-                    .animation(.snappy(duration: 0.25), value: selectedAdjustment)
-
-                    if hasAvailableAdjustments {
-                        ControlsView(
-                            edits: controlsEdits,
-                            cropConstraint: $draftEdits.cropConstraint,
-                            photoEditConfiguration: photoEditConfiguration,
-                            selectedAdjustment: $selectedAdjustment,
-                            selectedSection: $selectedSection,
-                            onSelectCropConstraint: { constraint in
-                                applyAspectRatioConstraint(
-                                    constraint,
-                                    to: currentCropFrame,
-                                    inCanvas: canvasSize,
-                                    displaySize: displayGeometry.visibleImageSize
-                                )
-                            },
-                            onRotate: { direction in
-                                withAnimation(.snappy(duration: 0.25)) {
-                                    rotateByQuarterTurn(direction: direction, in: canvasSize)
-                                }
-                            }
-                        )
-                        .zIndex(1)
-                    }
+            Group {
+                if showsCroppingMode, hasAvailableAdjustments {
+                    cropEditorContent(in: geometry.size)
+                } else {
+                    overlayEditorContent(in: geometry.size)
                 }
             }
             .onChange(of: selectedAdjustment) { _, newValue in
                 if newValue.section != selectedSection {
                     selectedSection = newValue.section
                 }
-            }
-            .task(id: previewRenderKey) {
-                adjustedPreviewImage = image.applyingColorAdjustments(using: draftEdits, targetSize: canvasSize) ?? image
             }
             .onAppear {
                 sanitizeSelection()
@@ -172,44 +112,120 @@ private extension PhotoEditor {
         .border(.yellow, width: photoEditConfiguration.showFrames ? 1 : 0)
     }
 
+    func cropEditorContent(in availableSize: CGSize) -> some View {
+        let availableDisplayGeometry = displayGeometry(in: availableSize)
+        let availableCropFrame = committedCropFrame(in: availableSize, visibleImageSize: availableDisplayGeometry.visibleImageSize)
+
+        return VStack(spacing: 0) {
+            GeometryReader { canvasGeometry in
+                let canvasSize = canvasGeometry.size
+                let displayGeometry = displayGeometry(in: canvasSize)
+                let previewRenderKey = adjustmentPreviewRenderKey(targetSize: canvasSize)
+                let currentCropFrame = committedCropFrame(in: canvasSize, visibleImageSize: displayGeometry.visibleImageSize)
+
+                editorCanvas(canvasSize: canvasSize, currentCropFrame: currentCropFrame)
+                    .frame(width: canvasSize.width, height: canvasSize.height)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .animation(.snappy(duration: 0.25), value: selectedSection)
+                    .animation(.snappy(duration: 0.25), value: selectedAdjustment)
+                    .task(id: previewRenderKey) {
+                        adjustedPreviewImage = image.applyingColorAdjustments(using: draftEdits, targetSize: canvasSize) ?? image
+                    }
+            }
+
+            controlsPanel(
+                currentCropFrame: availableCropFrame,
+                canvasSize: availableSize,
+                displayGeometry: availableDisplayGeometry
+            )
+        }
+    }
+
+    func overlayEditorContent(in canvasSize: CGSize) -> some View {
+        let displayGeometry = displayGeometry(in: canvasSize)
+        let previewRenderKey = adjustmentPreviewRenderKey(targetSize: canvasSize)
+        let currentCropFrame = committedCropFrame(in: canvasSize, visibleImageSize: displayGeometry.visibleImageSize)
+
+        return ZStack(alignment: .bottom) {
+            editorCanvas(canvasSize: canvasSize, currentCropFrame: currentCropFrame)
+                .frame(width: canvasSize.width, height: canvasSize.height)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .animation(.snappy(duration: 0.25), value: selectedSection)
+                .animation(.snappy(duration: 0.25), value: selectedAdjustment)
+
+            if hasAvailableAdjustments {
+                controlsPanel(
+                    currentCropFrame: currentCropFrame,
+                    canvasSize: canvasSize,
+                    displayGeometry: displayGeometry
+                )
+                .zIndex(1)
+            }
+        }
+        .task(id: previewRenderKey) {
+            adjustedPreviewImage = image.applying(draftEdits, outputSize: canvasSize) ?? image
+        }
+    }
+
+    @ViewBuilder
+    func editorCanvas(canvasSize: CGSize, currentCropFrame: CGRect) -> some View {
+        if showsCroppingMode {
+            CroppingView(
+                image: image,
+                canvasSize: canvasSize,
+                edits: $draftEdits,
+                photoEditConfiguration: photoEditConfiguration
+            )
+        } else if hasAvailableAdjustments {
+            adjustCanvas(
+                geometrySize: canvasSize,
+                cropFrame: currentCropFrame
+            )
+        } else {
+            Image(platformImage: image)
+                .resizable()
+                .scaledToFit()
+                .padding()
+        }
+    }
+
+    func controlsPanel(
+        currentCropFrame: CGRect,
+        canvasSize: CGSize,
+        displayGeometry: DisplayGeometry
+    ) -> some View {
+        ControlsView(
+            edits: controlsEdits,
+            cropConstraint: $draftEdits.cropConstraint,
+            photoEditConfiguration: photoEditConfiguration,
+            selectedAdjustment: $selectedAdjustment,
+            selectedSection: $selectedSection,
+            onSelectCropConstraint: { constraint in
+                applyAspectRatioConstraint(
+                    constraint,
+                    to: currentCropFrame,
+                    inCanvas: canvasSize,
+                    displaySize: displayGeometry.visibleImageSize
+                )
+            },
+            onRotate: { direction in
+                withAnimation(.snappy(duration: 0.25)) {
+                    rotateByQuarterTurn(direction: direction, in: canvasSize)
+                }
+            }
+        )
+    }
+
     @ViewBuilder
     func adjustCanvas(geometrySize: CGSize, cropFrame: CGRect) -> some View {
-        let displayGeometry = displayGeometry(in: geometrySize)
-        let fittedSize = displayGeometry.fittedSize
-        let renderSize = displayGeometry.renderSize
-        let baseScale = LosslessEditGeometry.rotationFitScale(for: fittedSize, angle: displayGeometry.tiltRotation)
-        let cropCenterOffset = CGSize(
-            width: cropFrame.midX - (geometrySize.width / 2),
-            height: cropFrame.midY - (geometrySize.height / 2)
-        )
-        let cropScaleX = cropFrame.width > 0 ? geometrySize.width / cropFrame.width : 1
-        let cropScaleY = cropFrame.height > 0 ? geometrySize.height / cropFrame.height : 1
-        let cropScale = min(cropScaleX, cropScaleY)
-        let displayedCropSize = CGSize(
-            width: cropFrame.width * cropScale,
-            height: cropFrame.height * cropScale
-        )
-
         ZStack {
             Color.black
 
             adjustmentPreviewImage
                 .resizable()
                 .scaledToFit()
-                .frame(width: renderSize.width, height: renderSize.height)
-                .scaleEffect(baseScale)
-                .rotationEffect(draftEdits.rotation)
-                .offset(
-                    x: -cropCenterOffset.width,
-                    y: -cropCenterOffset.height
-                )
-                .scaleEffect(cropScale)
+                .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .mask {
-                    Rectangle()
-                        .frame(width: displayedCropSize.width, height: displayedCropSize.height)
-                        .position(x: geometrySize.width / 2, y: geometrySize.height / 2)
-                }
         }
         .frame(width: geometrySize.width, height: geometrySize.height)
         .clipped()
