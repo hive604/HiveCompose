@@ -19,6 +19,7 @@ struct CroppingView: View {
 
     @State private var draftCropFrame: CGRect?
     @State private var cropGestureStartFrame: CGRect?
+    @State private var adjustedPreviewImage: PlatformImage?
 
     init(image: PlatformImage, canvasSize: CGSize, edits: Binding<LosslessEdits>, photoEditConfiguration: PhotoEditConfiguration) {
         self.image = image
@@ -109,6 +110,9 @@ struct CroppingView: View {
             // External aspect-ratio changes should defer to the committed crop state.
             draftCropFrame = nil
             cropGestureStartFrame = nil
+        }
+        .task(id: previewRenderKey) {
+            adjustedPreviewImage = image.applyingColorAdjustments(using: edits, targetSize: canvasSize) ?? image
         }
     }
 
@@ -377,10 +381,35 @@ struct CroppingView: View {
         return 0
     }
 
-    private var previewImage: Image {
-        let adjustedImage = image.applyingColorAdjustments(using: edits, targetSize: canvasSize) ?? image
-        return Image(platformImage: adjustedImage)
+    private var previewRenderKey: PreviewRenderKey {
+        PreviewRenderKey(
+            targetSize: canvasSize,
+            brightness: edits.brightness,
+            exposure: edits.exposure,
+            contrast: edits.contrast,
+            saturation: edits.saturation,
+            vibrance: edits.vibrance,
+            sharpness: edits.sharpness,
+            warmth: edits.warmth,
+            tint: edits.tint
+        )
     }
+
+    private var previewImage: Image {
+        Image(platformImage: adjustedPreviewImage ?? image)
+    }
+}
+
+private struct PreviewRenderKey: Hashable {
+    var targetSize: CGSize
+    var brightness: Double
+    var exposure: Double
+    var contrast: Double
+    var saturation: Double
+    var vibrance: Double
+    var sharpness: Double
+    var warmth: Double
+    var tint: Double
 }
 
 private extension CGSize {
