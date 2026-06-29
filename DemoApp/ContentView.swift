@@ -15,7 +15,7 @@ struct ContentView: View {
     @AppStorage("selectedImageUUIDString") private var selectedImageUUIDString: String?
 
     // In-memory image for display
-    @State private var displayedImage: UIImage?
+    @State private var displayedImage: PlatformImage?
     @State private var losslessEdits = LosslessEdits(crop: nil, rotation: .zero)
 
     // Temporary selection binding for the picker
@@ -57,8 +57,8 @@ struct ContentView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 Group {
-                    if let uiImage = displayedImage,
-                       let rendered = uiImage.applying(losslessEdits, outputSize: uiImage.size) {
+                    if let PlatformImage = displayedImage,
+                       let rendered = PlatformImage.applying(losslessEdits, outputSize: PlatformImage.size) {
                         Image(platformImage: rendered)
                             .resizable()
                             .scaledToFit()
@@ -182,14 +182,14 @@ struct ContentView: View {
                 refreshPasteAvailability()
             }
             .fullScreenCover(isPresented: $isShowingEditor) {
-                if let uiImage = displayedImage {
+                if let PlatformImage = displayedImage {
                     let config = PhotoEditConfiguration(
                         croppingEffects: settings.croppingEffects,
                         allowedAdjustments: settings.enabledAdjustments
                     )
                     HiveCompose.PhotoEditor(
                         $losslessEdits,
-                        image: uiImage,
+                        image: PlatformImage,
                         configuration: config
                     )
                 }
@@ -240,7 +240,7 @@ struct ContentView: View {
 // MARK: - Import Helpers
 private extension ContentView {
     func importImageData(_ data: Data) throws {
-        guard let image = UIImage(data: data) else { return }
+        guard let image = PlatformImage(data: data) else { return }
 
         selectedImageUUIDString = UUID().uuidString
         try saveImage(data)
@@ -251,7 +251,7 @@ private extension ContentView {
         persistLosslessEdits()
     }
 
-    func importImage(_ image: UIImage) {
+    func importImage(_ image: PlatformImage) {
         guard let data = image.jpegData(compressionQuality: 0.95) ?? image.pngData() else { return }
 
         do {
@@ -309,7 +309,7 @@ private extension ContentView {
         }
 
         if let data = AppDataStore.loadImageData(uuid: selectedImageUUIDString),
-           let image = UIImage(data: data) {
+           let image = PlatformImage(data: data) {
             displayedImage = image
         } else {
             clearImage()
@@ -341,7 +341,7 @@ private extension ContentView {
 
 #if canImport(UIKit)
 private struct CameraImagePicker: UIViewControllerRepresentable {
-    let onImagePicked: (UIImage) -> Void
+    let onImagePicked: (PlatformImage) -> Void
     @Environment(\.dismiss) private var dismiss
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -359,10 +359,10 @@ private struct CameraImagePicker: UIViewControllerRepresentable {
     }
 
     final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let onImagePicked: (UIImage) -> Void
+        let onImagePicked: (PlatformImage) -> Void
         let dismiss: DismissAction
 
-        init(onImagePicked: @escaping (UIImage) -> Void, dismiss: DismissAction) {
+        init(onImagePicked: @escaping (PlatformImage) -> Void, dismiss: DismissAction) {
             self.onImagePicked = onImagePicked
             self.dismiss = dismiss
         }
@@ -371,7 +371,7 @@ private struct CameraImagePicker: UIViewControllerRepresentable {
             _ picker: UIImagePickerController,
             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
         ) {
-            if let image = info[.originalImage] as? UIImage {
+            if let image = info[.originalImage] as? PlatformImage {
                 onImagePicked(image)
             }
             dismiss()

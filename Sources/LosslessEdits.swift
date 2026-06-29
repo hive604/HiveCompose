@@ -17,7 +17,7 @@ public struct LosslessEdits: Codable, Hashable, Sendable {
     /// The selected aspect-ratio constraint for the crop tool.
     ///
     /// This is persisted with the edit state for UI restoration, but it does not
-    /// affect image rendering in `UIImage.applying(_:)`.
+    /// affect image rendering in `PlatformImage.applying(_:)`.
     public var cropConstraint: CropConstraint
 
     /// Rotation of image.

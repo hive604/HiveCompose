@@ -447,7 +447,7 @@ private extension PhotoEditor {
 
 #Preview {
 #if canImport(UIKit)
-    if let image = UIImage(systemName: "photo") {
+    if let image = PlatformImage(systemName: "photo") {
         PhotoEditor(
             .constant(LosslessEdits(crop: nil, rotation: .zero)),
             image: image

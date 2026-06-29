@@ -1,5 +1,5 @@
 //
-//  UIImageExtensions.swift
+//  PlatformImageExtensions.swift
 //  HiveCompose
 //
 //  Created by Steven Fisher on 2026-04-25.
@@ -259,7 +259,7 @@ public extension PlatformImage {
 #endif
     }
 
-    var swiftUIImage: Image {
+    var swiftPlatformImage: Image {
         return Image(platformImage: self)
     }
 }
@@ -269,11 +269,11 @@ public extension PlatformImage {
 private extension CIImage {
     static func from(platformImage: PlatformImage) -> CIImage? {
 #if os(iOS) || os(tvOS) || os(visionOS) || os(watchOS)
-        let uiImage = platformImage as UIImage
-        if let cg = uiImage.cgImage {
+        let PlatformImage = platformImage as PlatformImage
+        if let cg = PlatformImage.cgImage {
             return CIImage(cgImage: cg)
         }
-        if let ci = uiImage.ciImage {
+        if let ci = PlatformImage.ciImage {
             return ci
         }
         return nil

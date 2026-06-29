@@ -402,7 +402,7 @@ struct CroppingView: View {
     )
     let demoImage: PlatformImage = {
         #if canImport(UIKit)
-        return UIImage(systemName: "photo")!
+        return PlatformImage(systemName: "photo")!
         #elseif canImport(AppKit)
         let config = NSImage.SymbolConfiguration(pointSize: 64, weight: .regular)
         return NSImage(systemSymbolName: "photo", accessibilityDescription: nil)!.withSymbolConfiguration(config) ?? NSImage(size: NSSize(width: 100, height: 100))
