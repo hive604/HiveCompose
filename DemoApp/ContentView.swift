@@ -57,8 +57,8 @@ struct ContentView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 Group {
-                    if let PlatformImage = displayedImage,
-                       let rendered = PlatformImage.applying(losslessEdits, outputSize: PlatformImage.size) {
+                    if let platformImage = displayedImage,
+                       let rendered = platformImage.applying(losslessEdits, outputSize: platformImage.size) {
                         Image(platformImage: rendered)
                             .resizable()
                             .scaledToFit()
@@ -182,14 +182,14 @@ struct ContentView: View {
                 refreshPasteAvailability()
             }
             .fullScreenCover(isPresented: $isShowingEditor) {
-                if let PlatformImage = displayedImage {
+                if let platformImage = displayedImage {
                     let config = PhotoEditConfiguration(
                         croppingEffects: settings.croppingEffects,
                         allowedAdjustments: settings.enabledAdjustments
                     )
                     HiveCompose.PhotoEditor(
                         $losslessEdits,
-                        image: PlatformImage,
+                        image: platformImage,
                         configuration: config
                     )
                 }
