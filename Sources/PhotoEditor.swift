@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import os
 
 public struct PhotoEditor: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -15,12 +14,7 @@ public struct PhotoEditor: View {
     static let checkmark = "checkmark.circle.fill"
     static let xmark = "xmark.circle.fill"
 
-    private static let logger = Logger(subsystem: "com.hive604.Reframe", category: "PhotoEditor")
     private static let minimumStoredCropDimension: CGFloat = 0.0001
-
-    private static func log(_ str: String) {
-        logger.debug("\(str)")
-    }
 
     @Binding var edits: LosslessEdits
     let image: PlatformImage
@@ -77,7 +71,6 @@ public struct PhotoEditor: View {
         }
         .background(Color.black)
         .onChange(of: edits) { _, newValue in
-            Self.log("edits -> \(edits)")
             draftEdits = newValue
             sanitizeSelection()
         }
@@ -165,13 +158,9 @@ private extension PhotoEditor {
                 }
             }
             .onChange(of: selectedAdjustment) { _, newValue in
-                Self.log("adjustment -> \(newValue.rawValue)")
                 if newValue.section != selectedSection {
                     selectedSection = newValue.section
                 }
-            }
-            .onChange(of: selectedSection) { _, newValue in
-                Self.log("section -> \(newValue.rawValue)")
             }
             .task(id: previewRenderKey) {
                 adjustedPreviewImage = image.applyingColorAdjustments(using: draftEdits, targetSize: canvasSize) ?? image
@@ -327,7 +316,6 @@ private extension PhotoEditor {
 private extension PhotoEditor {
     var cancelButton: some View {
         CircularSymbolButton(systemName: Self.xmark) {
-            Self.log("tapped cancel")
             sanitizeSelection()
             dismiss()
         }
@@ -336,7 +324,6 @@ private extension PhotoEditor {
 
     var acceptButton: some View {
         CircularSymbolButton(systemName: Self.checkmark) {
-            Self.log("tapped accept")
             edits = draftEdits
             sanitizeSelection()
             save?()
