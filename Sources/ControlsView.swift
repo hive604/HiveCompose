@@ -29,24 +29,6 @@ enum AdjustmentSection: String, CaseIterable, Identifiable {
     }
 }
 
-private enum CompactSection: String, CaseIterable, Identifiable {
-    case geometry
-    case tone
-    case color
-    case whiteBalance
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .geometry: return "Geometry"
-        case .tone: return "Tone"
-        case .color: return "Color"
-        case .whiteBalance: return "White Balance"
-        }
-    }
-}
-
 extension PhotoEditConfiguration.Adjustment {
     var title: String {
         switch self {
@@ -175,41 +157,12 @@ struct ControlsView: View {
         }
     }
 
-    private var availableCompactSections: [CompactSection] {
-        var sections: [CompactSection] = []
-        // Include geometry if either crop or tilt is allowed
-        if photoEditConfiguration.allowedAdjustments.contains(.crop) || photoEditConfiguration.allowedAdjustments.contains(.tilt) {
-            sections.append(.geometry)
-        }
-        if availableTools.contains(where: { $0.section == .tone }) { sections.append(.tone) }
-        if availableTools.contains(where: { $0.section == .color }) { sections.append(.color) }
-        if availableTools.contains(where: { $0.section == .whiteBalance }) { sections.append(.whiteBalance) }
-        return sections
-    }
-
-    private var selectedCompactSection: CompactSection {
-        compactSection(for: selectedSection)
-    }
 
     private var selectedCompactAdjustment: PhotoEditConfiguration.Adjustment? {
-        guard selectedCompactSection != .geometry else { return nil }
+        guard selectedSection != .geometry else { return nil }
 
-        let sectionAdjustments = adjustments(for: selectedCompactSection)
+        let sectionAdjustments = adjustments(for: selectedSection)
         return sectionAdjustments.contains(selectedAdjustment) ? selectedAdjustment : sectionAdjustments.first
-    }
-
-    private func adjustments(for section: CompactSection) -> [PhotoEditConfiguration.Adjustment] {
-        switch section {
-        case .geometry:
-            // Geometry is represented by crop + tilt but combined in UI
-            return availableAdjustments.filter { $0.section == .geometry && $0 != .crop } // tilt only as slider
-        case .tone:
-            return availableAdjustments.filter { $0.section == .tone }
-        case .color:
-            return availableAdjustments.filter { $0.section == .color }
-        case .whiteBalance:
-            return availableAdjustments.filter { $0.section == .whiteBalance }
-        }
     }
 
     var body: some View {
@@ -249,21 +202,10 @@ struct ControlsView: View {
                 ForEach(availableSections) { section in
                     Button {
                         withAnimation(.snappy(duration: 0.25)) {
-                            selectedSection = section
-                            if selectedAdjustment.section != section,
-                               let first = tool(for: section) {
-                                selectedAdjustment = first
-                            }
+                            selectSection(section)
                         }
                     } label: {
-                        Text(section.title)
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(
-                                selectedSection == section ? .white.opacity(0.18) : .white.opacity(0.08),
-                                in: Capsule()
-                            )
+                        sectionButtonLabel(section, compact: false)
                     }
                     .buttonStyle(.plain)
                 }
@@ -280,41 +222,21 @@ struct ControlsView: View {
         VStack(alignment: .leading, spacing: rowSpacing) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(availableCompactSections) { section in
+                    ForEach(availableSections) { section in
                         Button {
                             withAnimation(.snappy(duration: 0.25)) {
-                                switch section {
-                                case .geometry:
-                                    selectedSection = .geometry
-                                    selectedAdjustment = .crop
-                                case .tone:
-                                    selectedSection = .tone
-                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
-                                case .color:
-                                    selectedSection = .color
-                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
-                                case .whiteBalance:
-                                    selectedSection = .whiteBalance
-                                    selectedAdjustment = adjustments(for: section).first ?? selectedAdjustment
-                                }
+                                selectSection(section)
                             }
                         } label: {
-                            Text(section.title)
-                                .font(.caption2.weight(.medium))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(
-                                    selectedCompactSection == section ? .white.opacity(0.18) : .white.opacity(0.08),
-                                    in: Capsule()
-                                )
+                            sectionButtonLabel(section, compact: true)
                         }
                         .buttonStyle(.plain)
                     }
                 }
             }
 
-            if selectedCompactSection != .geometry {
-                let sectionAdjustments = adjustments(for: selectedCompactSection)
+            if selectedSection != .geometry {
+                let sectionAdjustments = adjustments(for: selectedSection)
                 if !sectionAdjustments.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -345,16 +267,36 @@ struct ControlsView: View {
         }
     }
 
+    private func selectSection(_ section: AdjustmentSection) {
+        selectedSection = section
+
+        if selectedAdjustment.section != section,
+           let first = tool(for: section) {
+            selectedAdjustment = first
+        }
+    }
+
+    private func sectionButtonLabel(_ section: AdjustmentSection, compact: Bool) -> some View {
+        Text(section.title)
+            .font(compact ? .caption2.weight(.medium) : .caption.weight(.semibold))
+            .padding(.horizontal, compact ? 10 : 12)
+            .padding(.vertical, compact ? 6 : 7)
+            .background(
+                selectedSection == section ? .white.opacity(0.18) : .white.opacity(0.08),
+                in: Capsule()
+            )
+    }
+
     @ViewBuilder
     private var activeCompactSectionControl: some View {
-        switch selectedCompactSection {
+        switch selectedSection {
         case .geometry:
             VStack(alignment: .leading, spacing: rowSpacing) {
                 aspectRatioRow
                 adjustmentSlider(for: .tilt)
             }
         case .tone, .color, .whiteBalance:
-            let sectionAdjustments = adjustments(for: selectedCompactSection)
+            let sectionAdjustments = adjustments(for: selectedSection)
             let active = selectedCompactAdjustment ?? sectionAdjustments.first
             if let active { adjustmentSlider(for: active) }
         }
@@ -512,18 +454,6 @@ struct ControlsView: View {
         availableTools.first(where: { $0.section == section })
     }
 
-    private func compactSection(for section: AdjustmentSection) -> CompactSection {
-        switch section {
-        case .geometry:
-            return .geometry
-        case .tone:
-            return .tone
-        case .color:
-            return .color
-        case .whiteBalance:
-            return .whiteBalance
-        }
-    }
 
 
     private func sanitizeSelection() {
