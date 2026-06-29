@@ -30,7 +30,7 @@ enum AdjustmentSection: String, CaseIterable, Identifiable {
 }
 
 extension PhotoEditConfiguration.Adjustment {
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .crop:
             return "Crop"
@@ -474,7 +474,7 @@ struct ControlsView: View {
 
     @ViewBuilder
     private func adjustmentSlider(
-        title: String,
+        title: LocalizedStringResource,
         systemImage: String,
         value: Binding<Double>,
         range: ClosedRange<Double>,
