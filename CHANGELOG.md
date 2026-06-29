@@ -1,5 +1,13 @@
 # HiveCompose Change Log
 
+## 1.0.3
+
+* Reduced repeated Core Image work during crop interaction and unrelated UI refreshes.
+* Removed temporary debug logging from PhotoEditor.
+* Reorganized the demo app into DemoApp/HiveComposeDemo.xcodeproj.
+* Changed the demo app to consume HiveCompose as a local Swift package instead of building an embedded framework target.
+* Fixed the misspelled PllatformImage.swift filename.
+
 ## 1.0.2
 
 * Added macOS 14 support to the package.
