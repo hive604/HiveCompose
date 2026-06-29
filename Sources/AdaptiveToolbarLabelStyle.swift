@@ -5,7 +5,6 @@
 //  Created by Steven Fisher on 2026-04-24.
 //
 
-
 import SwiftUI
 
 struct AdaptiveToolbarLabelStyle: LabelStyle {
