@@ -16,7 +16,7 @@ struct CircularSymbolButton: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.title3.weight(.bold))
-                .frame(width: 44, height: 44)
+//                .frame(width: 44, height: 44)
                 .background(.ultraThickMaterial, in: Circle())
         }
         .buttonStyle(CircularSymbolButtonStyle())

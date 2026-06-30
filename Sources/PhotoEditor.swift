@@ -8,6 +8,14 @@
 import SwiftUI
 
 public struct PhotoEditor: View {
+#if canImport(UIKit)
+    private static let editorBackground = Color(.systemBackground)
+#elseif canImport(AppKit)
+    private static let editorBackground = Color(.windowBackgroundColor)
+#else
+    private static let editorBackground = Color.primary.colorInvert()
+#endif
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dismiss) private var dismiss
 
@@ -59,14 +67,14 @@ public struct PhotoEditor: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            topBar
-                .zIndex(1)
-
+        ZStack(alignment: .top) {
             editorContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            topControlsOverlay
+                .zIndex(1)
         }
-        .background(Color.black)
+        .background(Self.editorBackground.ignoresSafeArea())
         .editorInitialFocus($editorSurfaceIsFocused)
         .onChange(of: edits) { _, newValue in
             draftEdits = newValue
@@ -79,18 +87,25 @@ public struct PhotoEditor: View {
 // MARK: - Layout
 
 private extension PhotoEditor {
-    var topBar: some View {
-        HStack {
-            cancelButton
+    var topControlsOverlay: some View {
+        GeometryReader { geometry in
+            let topInset = geometry.safeAreaInsets.top
+            let topPadding = topInset > 0 ? max(0, (topInset - 44) / 2) : 12
 
-            Spacer()
+            HStack {
+                cancelButton
 
-            acceptButton
+                Spacer()
+
+                acceptButton
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .padding(.top, topPadding)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .padding(.horizontal)
-        .padding(.top, 12)
-        .padding(.bottom, 12)
-        .background(.ultraThinMaterial)
+        .ignoresSafeArea(.container, edges: .top)
+        .allowsHitTesting(true)
     }
 
     var editorContent: some View {
@@ -144,24 +159,29 @@ private extension PhotoEditor {
     }
 
     func overlayEditorContent(in canvasSize: CGSize) -> some View {
-        let displayGeometry = displayGeometry(in: canvasSize)
+        let fullCanvasDisplayGeometry = displayGeometry(in: canvasSize)
         let previewRenderKey = adjustmentPreviewRenderKey(targetSize: canvasSize)
-        let currentCropFrame = committedCropFrame(in: canvasSize, visibleImageSize: displayGeometry.visibleImageSize)
+        let currentCropFrame = committedCropFrame(in: canvasSize, visibleImageSize: fullCanvasDisplayGeometry.visibleImageSize)
 
-        return ZStack(alignment: .bottom) {
-            editorCanvas(canvasSize: canvasSize, currentCropFrame: currentCropFrame)
-                .frame(width: canvasSize.width, height: canvasSize.height)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .animation(.snappy(duration: 0.25), value: selectedSection)
-                .animation(.snappy(duration: 0.25), value: selectedAdjustment)
+        return VStack(spacing: 0) {
+            GeometryReader { previewGeometry in
+                let previewSize = previewGeometry.size
+                let previewDisplayGeometry = displayGeometry(in: previewSize)
+                let previewCropFrame = committedCropFrame(in: previewSize, visibleImageSize: previewDisplayGeometry.visibleImageSize)
+
+                editorCanvas(canvasSize: previewSize, currentCropFrame: previewCropFrame)
+                    .frame(width: previewSize.width, height: previewSize.height)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .animation(.snappy(duration: 0.25), value: selectedSection)
+                    .animation(.snappy(duration: 0.25), value: selectedAdjustment)
+            }
 
             if hasAvailableAdjustments {
                 controlsPanel(
                     currentCropFrame: currentCropFrame,
                     canvasSize: canvasSize,
-                    displayGeometry: displayGeometry
+                    displayGeometry: fullCanvasDisplayGeometry
                 )
-                .zIndex(1)
             }
         }
         .task(id: previewRenderKey) {

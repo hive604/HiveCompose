@@ -299,7 +299,9 @@ private extension View {
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
 #if canImport(UIKit)
-        fullScreenCover(isPresented: isPresented, content: content)
+        fullScreenCover(isPresented: isPresented) {
+            content().statusBarHidden(true)
+        }
 #else
         sheet(isPresented: isPresented) {
             content()
