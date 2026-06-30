@@ -181,7 +181,7 @@ struct ContentView: View {
                 loadImage()
                 refreshPasteAvailability()
             }
-            .photoEditorPresentation(isPresented: $isShowingEditor) {
+            .losslessPhotoEditor(isPresented: $isShowingEditor) {
                 if let platformImage = displayedImage {
                     let config = PhotoEditConfiguration(
                         croppingEffects: settings.croppingEffects,
@@ -289,25 +289,6 @@ private extension ContentView {
 
     func refreshPasteAvailability() {
         canPasteImage = PlatformPasteboard.shared.containsImage
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func photoEditorPresentation<Content: View>(
-        isPresented: Binding<Bool>,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View {
-#if canImport(UIKit)
-        fullScreenCover(isPresented: isPresented) {
-            content().statusBarHidden(true)
-        }
-#else
-        sheet(isPresented: isPresented) {
-            content()
-                .frame(minHeight: 560)
-        }
-#endif
     }
 }
 
