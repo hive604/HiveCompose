@@ -285,6 +285,7 @@ struct ControlsView: View {
             Label(label, systemImage: systemImage)
                 .labelStyle(.iconOnly)
         }
+        .foregroundStyle(.primary)
         .buttonStyle(.bordered)
     }
 
