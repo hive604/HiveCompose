@@ -239,6 +239,16 @@ private extension PhotoEditor {
 
 private extension PhotoEditor {
 
+    var usableStoredCrop: CGRect? {
+        guard let crop = draftEdits.crop?.standardized,
+              crop.width > Self.minimumStoredCropDimension,
+              crop.height > Self.minimumStoredCropDimension else {
+            return nil
+        }
+
+        return crop
+    }
+
     var controlsEdits: Binding<LosslessEdits> {
         Binding(
             get: {
@@ -277,9 +287,7 @@ private extension PhotoEditor {
     }
 
     func committedCropFrame(in geometrySize: CGSize, visibleImageSize: CGSize) -> CGRect {
-        if let crop = draftEdits.crop?.standardized,
-           crop.width > Self.minimumStoredCropDimension,
-           crop.height > Self.minimumStoredCropDimension {
+        if let crop = usableStoredCrop {
             return LosslessEditGeometry.croppedFrame(
                 from: crop,
                 in: geometrySize,
