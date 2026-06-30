@@ -88,22 +88,17 @@ public struct PhotoEditor: View {
 
 private extension PhotoEditor {
     var topControlsOverlay: some View {
-        GeometryReader { geometry in
-            let topInset = geometry.safeAreaInsets.top
-            let topPadding = topInset > 0 ? max(0, (topInset - 44) / 2) : 12
+        HStack {
+            cancelButton
 
-            HStack {
-                cancelButton
+            Spacer()
 
-                Spacer()
-
-                acceptButton
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal)
-            .padding(.top, topPadding)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            acceptButton
         }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .ignoresSafeArea(.container, edges: .top)
         .allowsHitTesting(true)
     }
