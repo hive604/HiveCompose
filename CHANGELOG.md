@@ -1,5 +1,20 @@
 # HiveCompose Change Log
 
+## 1.1.0
+
+The 1.1.0 is mostly compatible with 1.0, but as the visual layout has changed you should change to presenting it with `losslessPhotoEditor(isPresented:content:)`.
+
+- Added a public `losslessPhotoEditor(isPresented:content:)` presentation modifier for presenting the photo editor from client apps.
+  - Uses `fullScreenCover` on UIKit platforms.
+  - Hides the status bar while the editor is presented on UIKit.
+  - Uses a sheet with a minimum height on AppKit platforms.
+- Updated the photo editor layout so the accept/cancel controls float over the editor instead of occupying a fixed top bar.
+  - The top controls now account for the top safe area.
+  - The editor background now uses platform-native background colors instead of hardcoded black.
+- Changed the adjustment editor layout so controls sit below the preview instead of overlaying the bottom of the image preview.
+- Remove tint from rotate buttons.
+- Added a macOS sheet minimum height for the shared photo editor presentation helper.
+
 ## 1.0.4
 
 Package
