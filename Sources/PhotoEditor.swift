@@ -359,18 +359,30 @@ private extension PhotoEditor {
     }
 }
 
-// MARK: - Rotation Helpers
+// MARK: - Rotation
 private extension PhotoEditor {
-    func rotateByQuarterTurn(direction: RotationDirection, in canvasSize: CGSize) {
-        let hasStoredCrop = draftEdits.crop?.standardized.width ?? 0 > Self.minimumStoredCropDimension
-            && draftEdits.crop?.standardized.height ?? 0 > Self.minimumStoredCropDimension
 
-        guard hasStoredCrop, let crop = draftEdits.crop?.standardized else {
-            draftEdits.rotation = .degrees(draftEdits.rotation.degrees + Double(direction.rawValue * 90))
+    /// Rotates the image by one quarter-turn and preserves the existing crop by
+    /// rotating it through canvas space into the new image orientation.
+    ///
+    /// Crops are stored as normalized coordinates inside the visible image rect:
+    /// x, y, width, and height are fractions of that rect; tilt can push edges
+    /// slightly outside 0...1.
+    ///
+    /// Rotation is applied in canvas points, so preserving a crop across a quarter-turn
+    /// means converting storage -> canvas, rotating the canvas rect, then converting
+    /// canvas -> storage for the new rotation.
+    func rotateByQuarterTurn(direction: RotationDirection, in canvasSize: CGSize) {
+        let updatedRotation: Angle = .degrees(draftEdits.rotation.degrees + Double(direction.rawValue * 90))
+
+        // Tiny or missing crops can't be preserved through rotation.
+        guard let crop = usableStoredCrop else {
+            draftEdits.rotation = updatedRotation
             draftEdits.crop = nil
             return
         }
 
+        // Use pre-rotation geometry to convert the stored crop into canvas space.
         let currentDisplaySize = displayGeometry(in: canvasSize).visibleImageSize
         let currentCanvasCrop = LosslessEditGeometry.croppedFrame(
             from: crop,
@@ -378,11 +390,30 @@ private extension PhotoEditor {
             visibleImageSize: currentDisplaySize
         )
 
+        // Rotate the canvas-space crop around the canvas center.
         let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-        let rotatedCanvasCrop = rotateAxisAlignedRect90(currentCanvasCrop, around: center, direction: direction)
+        let dx = currentCanvasCrop.midX - center.x
+        let dy = currentCanvasCrop.midY - center.y
 
-        draftEdits.rotation = .degrees(draftEdits.rotation.degrees + Double(direction.rawValue * 90))
+        let rotatedCenter: CGPoint
+        if direction.rawValue > 0 {
+            rotatedCenter = CGPoint(x: center.x - dy, y: center.y + dx)
+        } else {
+            rotatedCenter = CGPoint(x: center.x + dy, y: center.y - dx)
+        }
 
+        let rotatedSize = CGSize(width: currentCanvasCrop.height, height: currentCanvasCrop.width)
+        let rotatedCanvasCrop = CGRect(
+            x: rotatedCenter.x - rotatedSize.width / 2,
+            y: rotatedCenter.y - rotatedSize.height / 2,
+            width: rotatedSize.width,
+            height: rotatedSize.height
+        ).standardized
+
+        // Apply the rotation now so the following displayGeometry() call uses the post-rotation layout.
+        draftEdits.rotation = updatedRotation
+
+        // Clamp using post-rotation geometry, then normalize for storage.
         let newDisplayGeometry = displayGeometry(in: canvasSize)
         let newDisplaySize = newDisplayGeometry.visibleImageSize
         let bounds = CropBounds(
@@ -390,35 +421,14 @@ private extension PhotoEditor {
             visibleImageSize: newDisplaySize,
             rotation: newDisplayGeometry.tiltRotation
         )
-        let clamped = bounds.clamped(rotatedCanvasCrop)
+        let clampedCrop = bounds.clamped(rotatedCanvasCrop)
 
+        // Store the preserved crop back into the edit state as normalized coordinates.
         draftEdits.crop = LosslessEditGeometry.normalizedCrop(
-            from: clamped,
+            from: clampedCrop,
             in: canvasSize,
             visibleImageSize: newDisplaySize
         )
-    }
-
-    /// Rotates an axis-aligned rect by ±90° around a center, returning an axis-aligned rect.
-    func rotateAxisAlignedRect90(_ rect: CGRect, around center: CGPoint, direction: RotationDirection) -> CGRect {
-        // Translate rect center relative to canvas center
-        let dx = rect.midX - center.x
-        let dy = rect.midY - center.y
-
-        // Rotate center by ±90°: +90° -> (-y, x), -90° -> (y, -x)
-        let rotatedCenter: CGPoint = direction.rawValue > 0
-            ? CGPoint(x: center.x - dy, y: center.y + dx)
-            : CGPoint(x: center.x + dy, y: center.y - dx)
-
-        // Swap width/height for 90° rotations
-        let newSize = CGSize(width: rect.height, height: rect.width)
-
-        return CGRect(
-            x: rotatedCenter.x - newSize.width / 2,
-            y: rotatedCenter.y - newSize.height / 2,
-            width: newSize.width,
-            height: newSize.height
-        ).standardized
     }
 }
 
