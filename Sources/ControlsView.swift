@@ -237,21 +237,17 @@ struct ControlsView: View {
                 }
             } label: {
                 HStack {
-                    Label("Aspect Ratio", systemImage: "aspectratio")
-                        .labelStyle(
-                            AdaptiveToolbarLabelStyle(showsTitle: true)
-                        )
-                    if selectedAdjustment == .crop {
-                        Button {
-                            isShowingCropConstraintPopover = true
-                        } label: {
-                            Label(cropConstraint.label, systemImage: "aspectratio")
-                        }
-                        .buttonStyle(.bordered)
-                        .popover(isPresented: $isShowingCropConstraintPopover, arrowEdge: .bottom) {
-                            cropConstraintPopover
-                                .colorScheme(.dark)
-                        }
+                    Text("Aspect Ratio:")
+                    Button {
+                        isShowingCropConstraintPopover = true
+                    } label: {
+                        Label(cropConstraint.label, systemImage: "aspectratio")
+                    }
+                    .buttonStyle(.bordered)
+                    .popover(isPresented: $isShowingCropConstraintPopover, arrowEdge: .bottom) {
+                        cropConstraintPopover
+                            .colorScheme(.dark)
+                            .presentationCompactAdaptation(.popover)
                     }
                 }
                 .font(.caption2)
