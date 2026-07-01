@@ -38,24 +38,30 @@ enum CropFrameMutation {
         cropFrame.offsetBy(dx: translation.width, dy: translation.height)
     }
 
-    static func aspectRatioAdjustedCropFrame(_ cropFrame: CGRect, ratio: CGFloat) -> CGRect {
+    static func aspectRatioAdjustedCropFrame(_ cropFrame: CGRect, ratio: CGFloat, within maximumFrame: CGRect) -> CGRect {
         guard cropFrame.width > 0, cropFrame.height > 0, ratio > 0 else { return cropFrame }
 
-        let currentRatio = cropFrame.width / cropFrame.height
-        let center = CGPoint(x: cropFrame.midX, y: cropFrame.midY)
+        let center = CGPoint(
+            x: min(max(cropFrame.midX, maximumFrame.minX), maximumFrame.maxX),
+            y: min(max(cropFrame.midY, maximumFrame.minY), maximumFrame.maxY)
+        )
+        let maximumCenteredSize = CGSize(
+            width: 2 * min(center.x - maximumFrame.minX, maximumFrame.maxX - center.x),
+            height: 2 * min(center.y - maximumFrame.minY, maximumFrame.maxY - center.y)
+        )
 
-        let size: CGSize
-        if currentRatio > ratio {
-            size = CGSize(width: cropFrame.height * ratio, height: cropFrame.height)
-        } else {
-            size = CGSize(width: cropFrame.width, height: cropFrame.width / ratio)
+        var width = maximumCenteredSize.width
+        var height = width / ratio
+        if height > maximumCenteredSize.height {
+            height = maximumCenteredSize.height
+            width = height * ratio
         }
 
         return CGRect(
-            x: center.x - (size.width / 2),
-            y: center.y - (size.height / 2),
-            width: size.width,
-            height: size.height
+            x: center.x - width / 2,
+            y: center.y - height / 2,
+            width: width,
+            height: height
         )
     }
 

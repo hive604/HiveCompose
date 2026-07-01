@@ -328,10 +328,19 @@ private extension PhotoEditor {
         draftEdits.cropConstraint = constraint
 
         let displayGeometry = displayGeometry(in: geometrySize)
+        let cropBounds = CropBounds(
+            in: CGRect(origin: .zero, size: geometrySize),
+            visibleImageSize: visibleImageSize,
+            rotation: displayGeometry.tiltRotation
+        )
 
         let updatedCropFrame: CGRect
         if let ratio = constraint.ratio {
-            updatedCropFrame = CropFrameMutation.aspectRatioAdjustedCropFrame(cropFrame, ratio: ratio)
+            updatedCropFrame = CropFrameMutation.aspectRatioAdjustedCropFrame(
+                cropFrame,
+                ratio: ratio,
+                within: cropBounds.maximumFrame
+            )
         } else {
             updatedCropFrame = cropFrame
         }
