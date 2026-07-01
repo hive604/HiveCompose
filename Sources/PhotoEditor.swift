@@ -9,12 +9,13 @@ import SwiftUI
 
 public struct PhotoEditor: View {
 #if canImport(UIKit)
-    private static let editorBackground = Color(.systemBackground)
+    private static let editorBackgroundBase = Color(.systemBackground)
 #elseif canImport(AppKit)
-    private static let editorBackground = Color(.windowBackgroundColor)
+    private static let editorBackgroundBase = Color(.windowBackgroundColor)
 #else
-    private static let editorBackground = Color.primary.colorInvert()
+    private static let editorBackgroundBase = Color.primary.colorInvert()
 #endif
+    private static let editorBackground = editorBackgroundBase.opacity(0.85)
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dismiss) private var dismiss
